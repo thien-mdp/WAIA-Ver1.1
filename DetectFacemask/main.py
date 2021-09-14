@@ -11,6 +11,7 @@ import datetime
 import time
 import sqlite3
 import FaceMaskDetector
+import threading
 # from send2trash import send2trash # (shutil delete permanently)
 
 
@@ -82,7 +83,7 @@ message2.place(x=560, y=650)
 
 def Insert(id, name, role, numPhone, address):
     conn = sqlite3.connect(
-        "C:/Users/thien/OneDrive/Desktop/CAPS 1/WAIA-Ver1.1/DetectFacemask/data.db")
+        "data.db")
     query = "SELECT * FROM Employee WHERE ID = " + str(id)
     cursor = conn.execute(query)
 
@@ -104,7 +105,7 @@ def Insert(id, name, role, numPhone, address):
 def delete(id, name, role, numPhone, address):
 
     conn = sqlite3.connect(
-        "C:/Users/thien/OneDrive/Desktop/CAPS 1/WAIA-Ver1.1/DetectFacemask/data.db")
+        "data.db")
     query = "SELECT * FROM Employee WHERE ID = " + str(id)
     cursor = conn.execute(query)
 
@@ -165,11 +166,9 @@ def is_empty(a):
 def Add():
     Id = (txt.get())
     name = (txt2.get())
-    if (is_number(Id) == False):
-        messagebox.showwarning("WARNING", "VUI LÒNG NHẬP THÔNG TIN NHÂN VIÊN!")
-    elif (is_number(Id) == False):
+    if is_number(Id) == False:
         messagebox.showwarning("WARNING", "VUI LÒNG NHẬP ID LÀ MỘT SỐ!")
-    elif (is_empty(name) != 0 or name.isspace()):
+    elif name == "":
         messagebox.showwarning('WARNING', "VUI LÒNG NHẬP TÊN NHÂN VIÊN!")
     elif (is_number(Id) and is_empty(name) == 0):
         # Load TVien NDKM cua OpenCV
@@ -187,7 +186,7 @@ def Add():
         address = txtAddress.get()
 
         conn = sqlite3.connect(
-            "C:/Users/thien/OneDrive/Desktop/CAPS 1/WAIA-Ver1.1/DetectFacemask/data.db")
+            "data.db")
         query = "SELECT * FROM Employee WHERE ID = " + str(Id)
         cursor = conn.execute(query)
 
@@ -275,7 +274,7 @@ def getImageWithId(path):
 
 def getProfile(Id):
     conn = sqlite3.connect(
-        "C:/Users/thien/OneDrive/Desktop/CAPS 1/WAIA-Ver1.1/DetectFacemask/data.db")
+        "data.db")
     query = "SELECT * FROM Employee WHERE ID="+str(Id)
     cursor = conn.execute(query)
     profile = None
@@ -338,7 +337,7 @@ def TrackImages():
                     # time.sleep(5)
                 else:
                     noOfFile = len(os.listdir(
-                        "C:/Users/thien/OneDrive/Desktop/CAPS 1/WAIA-Ver1.1/DetectFacemask/ImagesUnknown"))+1
+                        "ImagesUnknown/"))+1
                     # messagebox.showwarning(
                     # "WARNING", "CÓ NGƯỜI LẠ!\nVUI LÒNG KIỂM TRA !!!")
                     cv2.putText(frame, "Unknown", (x, y + h + 30),
@@ -384,7 +383,7 @@ def Update():
         messagebox.showwarning('WARNING', "VUI LÒNG NHẬP TÊN NHÂN VIÊN!")
     else:
         conn = sqlite3.connect(
-            "C:/Users/thien/OneDrive/Desktop/CAPS 1/WAIA-Ver1.1/DetectFacemask/data.db")
+            "data.db")
         query = "SELECT * FROM Employee WHERE ID = " + str(id)
         cursor = conn.execute(query)
 
@@ -417,7 +416,7 @@ def Delete():
         # Delete from Database
         # delete(id, name, role, numPhone, address)
         conn = sqlite3.connect(
-            "C:/Users/thien/OneDrive/Desktop/CAPS 1/WAIA-Ver1.1/DetectFacemask/data.db")
+            "data.db")
         query = "SELECT * FROM Employee WHERE ID = " + str(id)
         cursor = conn.execute(query)
 
