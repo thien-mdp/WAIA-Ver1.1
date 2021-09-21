@@ -1,0 +1,17 @@
+1-Start 
+Capcha
+
+2-Text lời chào
+Button ( ✅Join The Airdrop )
+
+3-Yêu cầu @Usename
+*nhập đúng định dạng*
+
+3- Nhiệm vụ jond Group
+*"Check use jond group"*
+Button ( ✅Done )
+
+4- Yêu cầu nhập địa chỉ bep20
+*nhập đúng định dạng*
+
+
