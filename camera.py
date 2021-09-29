@@ -24,7 +24,7 @@ class MyVideoCapture:
             self.video.release()
     def getLabels(self):
         self.LABELS = []
-        with open(os.path.join(CURRENT_DIR, "labels_facemask.txt"), 'r') as file:
+        with open(os.path.join(CURRENT_DIR,"labels_facemask.txt"), 'r') as file:
             for x in file:
                 self.LABELS.append(str(x).replace("\n", ""))
     def get_frame(self):
@@ -104,8 +104,8 @@ class MyVideoCapture:
             list_name = []
             list_result = []
             if len(predictions) != 0:
-                for name, (top, right, bottom, left) in predictions:
-                    print("- Found {} at ({}, {})".format(name, left, top))
+                # for name, (top, right, bottom, left) in predictions:
+                #     # print("- Found {} at ({}, {})".format(name, left, top))
                 for name, (top, right, bottom, left) in predictions:
                     top_right = (right, top)
                     bottom_left = (left, bottom + 22)
@@ -114,13 +114,13 @@ class MyVideoCapture:
                     b = bottom - top
                     top_left = (top, left)
                     try:
-
                         face = self.cut_face(frame, top, right, bottom, left)
                         predicted, acc = self.PredictMat(face)
                         result = self.LABELS[predicted]
-                        print(result)
                         cv2.putText(frame, str(result), top_left, cv2.FONT_HERSHEY_SIMPLEX, 1, name_to_color(result), 1,
                                     cv2.FILLED)
+                        list_name.append(name)
+                        list_result.append(result)
                     except:
                         pass
                     cv2.rectangle(frame, top_right, bottom_left, (255, 0, 0), 3)

@@ -6,12 +6,22 @@ from random import randrange
 import os
 from camera import MyVideoCapture
 import test_train
+from datetime import datetime
 from threading import Thread
-from database import sv,engine,metadata,check_sinhvien,update_sinhvien,del_sinhvien,add_sinhvien,get_sinhhvien,del_all_sv,get_one_sv
+from database import get_so_lan_vi_pham,sv,engine,metadata,check_sinhvien,update_sinhvien,del_sinhvien,add_sinhvien,get_sinhhvien,del_all_sv,get_one_sv,get_ds_vi_pham,check_vi_pham_hop_le
 import shutil
 #Folder Dataset
 FOLDER = "dataset/"
 import time
+
+def get_time():
+    now = datetime.now()
+
+    now = str(now).split(" ")
+    key1 = "".join(now[0].split("-"))
+    key2 = "".join(now[1].split(":")).split(".")[0]
+    key = key1 + key2
+    return key
 
 class Login(tk.Tk):
     def __init__(self):
@@ -141,8 +151,87 @@ class APPMAIN(tk.Tk):
 
         self.create_find_sv()
         self.label_kq = None
+        self.form_update = None
+        self.create_frame_show_kq_detect()
 
+    #ham update thong tin 1 sinh vien
+
+    def update_one_sv(self):
+        name = self.name_update_entry.get()
+        lop = self.lop_update_entry.get()
+        sdt = self.sdt_update_entry.get()
+        update_sinhvien(self.id_find,name=name,lop=lop,sdt=sdt)
+    def create_frame_show_kq_detect(self):
+        self.show_kq_detect = ttk.Frame(self)
+        self.label_kq_detect = ttk.Label(self.show_kq_detect, text="",font=('Helvetica', 16))
+        self.label_kq_detect.grid(row=0, column=0)
+        text_show = ""
+        self.show_kqs = ttk.Label(self.show_kq_detect, text=text_show,font=('Helvetica', 12))
+        self.show_kqs.grid(row=1, column=0)
+        self.show_kq_detect.grid(row=4, column=0)
+    def nhan_dien_khau_trang(self):
+        luong_detect = Thread(target=self.detect_mask)
+
+        luong_detect.start()
+    #ham nhan dien
+    def detect_mask(self):
+        video_frame = MyVideoCapture()
+        try:
+            os.mkdir("vipham")
+        except:
+            pass
+        while True:
+            list_id, list_result, ret, frame = video_frame.get_frame_detect()
+            cv2.imshow("CẢNH BÁO ĐEO KHẨU TRANG", frame)
+            text_show = ""
+            for i in range(len(list_id)):
+                text_show = text_show + "ID: {0} =>> {1}\n".format(list_id[i],list_result[i])
+                if list_result[i] == "No mask" or list_result[i] == "Wrong":
+                    name_img = str(get_time())+".jpg"
+                    check = check_vi_pham_hop_le(list_id[i],name_img=name_img)
+                    if check:
+                        cv2.imwrite("vipham/" + name_img, frame)
+            self.show_kqs['text'] = text_show
+            self.label_kq_detect['text'] = "DANH SÁCH NHẬN DIỆN"
+            self.show_kq_detect.update()
+            if cv2.waitKey(20) == 27:
+                self.show_kq_detect.destroy()
+                break
+        cv2.destroyAllWindows()
+
+
+    #ham hien noi dung update
+    def show_form_update(self):
+        self.form_update = ttk.Frame(self)
+        self.thongtin_update_label = ttk.Label(self.form_update,text="SỬA THÔNG TIN CỦA #ID{0}".format(self.id_find),font=('Helvetica', 16))
+        self.thongtin_update_label.grid(row=0,column=0)
+        #name
+        self.name_update_label = ttk.Label(self.form_update,text="Tên SV: ")
+        self.name_update_label.grid(row=1,column=0,sticky=tk.W)
+        self.name_update_entry = tk.StringVar()
+        self.name_update_entry = ttk.Entry(self.form_update)
+        self.name_update_entry.grid(row=1,column=0,sticky=tk.E,ipadx=50)
+
+        #lop
+        self.lop_update_label = ttk.Label(self.form_update, text="Lớp SV: ")
+        self.lop_update_label.grid(row=2, column=0, sticky=tk.W)
+        self.lop_update_entry = tk.StringVar()
+        self.lop_update_entry = ttk.Entry(self.form_update)
+        self.lop_update_entry.grid(row=2, column=0, sticky=tk.E, ipadx=50)
+        #sdt
+        self.sdt_update_label = ttk.Label(self.form_update, text="SDT SV: ")
+        self.sdt_update_label.grid(row=3, column=0, sticky=tk.W)
+        self.sdt_update_entry = tk.StringVar()
+        self.sdt_update_entry = ttk.Entry(self.form_update)
+        self.sdt_update_entry.grid(row=3, column=0, sticky=tk.E, ipadx=50)
+
+        #button update
+        self.button_update_one_sv = ttk.Button(self.form_update,text= "UPDATE",command=self.update_one_sv)
+        self.button_update_one_sv.grid(row=4,column=0)
+        self.form_update.grid(row=4, column=0, sticky=tk.W, padx=20)
     def train_after_del(self):
+        if self.form_update != None:
+            self.form_update.destroy()
         list_data = os.listdir(FOLDER)
         if len(list_data)==0:
             self.label_kq['text'] = "Đã xóa thành công sinh viên! Vui lòng Reload lại danh sách!"
@@ -166,6 +255,8 @@ class APPMAIN(tk.Tk):
             luong_train_lai.start()
     #ham tim kiem sinh vien va show ket qua
     def find_sinh_vien(self):
+        if self.form_update != None:
+            self.form_update.destroy()
         self.id_find = self.id_find_entry.get()
         if check_id(self.id_find) == False:
             messagebox.showwarning(
@@ -176,16 +267,16 @@ class APPMAIN(tk.Tk):
         if self.label_kq != None:
             self.label_kq.destroy()
         if self.sinhvien_da_co == False:
-            self.label_kq = ttk.Label(self.frame_show_kq,text="Sinh viên bạn tìm không có !")
+            self.label_kq = ttk.Label(self.frame_show_kq,text="Sinh viên bạn tìm không có !",font=('Helvetica', 13))
             self.label_kq.grid(row = 0,column=0)
             self.frame_show_kq.grid(row=3, column=0)
             return False
         text_show = "ID : {0}\t Tên: {1}\t Lớp: {2}\t SDT: {3}\t".format(self.sinhvien_da_co[0],self.sinhvien_da_co[1],self.sinhvien_da_co[2],self.sinhvien_da_co[3])
-        self.label_kq = ttk.Label(self.frame_show_kq, text=text_show)
+        self.label_kq = ttk.Label(self.frame_show_kq, text=text_show,font=('Helvetica', 13))
         self.label_kq.grid(row=0, column=0,columnspan=2)
         self.button_xoa_one_sv = ttk.Button(self.frame_show_kq,text = "Xóa Sinh Viên",command = self.xoa_sinh_vien)
         self.button_xoa_one_sv.grid(row=1,column = 0)
-        self.button_update_sv = ttk.Button(self.frame_show_kq,text = "Sửa Thông Tin")
+        self.button_update_sv = ttk.Button(self.frame_show_kq,text = "Sửa Thông Tin",command=self.show_form_update)
         self.button_update_sv.grid(row=1,column = 1)
         self.frame_show_kq.grid(row=3,column=0)
 
@@ -246,7 +337,7 @@ class APPMAIN(tk.Tk):
 
         self.tree.bind('<<TreeviewSelect>>', item_selected)
 
-        self.tree.grid(row=2, column=0, sticky='nsew',rowspan=4,columnspan=3)
+        self.tree.grid(row=2, column=0, sticky='nsew',rowspan=5,columnspan=3)
         self.scrollbar = ttk.Scrollbar(self.table, orient=tk.VERTICAL, command=self.tree.yview)
         self.tree.configure(yscroll=self.scrollbar.set)
         self.scrollbar.grid(row=2, column=4, sticky='ns',rowspan=4)
@@ -256,15 +347,19 @@ class APPMAIN(tk.Tk):
         self.button_update_ds.grid(row=3, column=5, padx=100)
         self.button_update_ds = ttk.Button(self.table, text="XÓA TẤT CẢ SINH VIÊN", command=self.delete_all_sv)
         self.button_update_ds.grid(row=4, column=5, padx=100)
-        self.button_nhandien = ttk.Button(self.table, text="BẮT ĐẦU NHẬN DIỆN", command=nhan_dien_khau_trang)
+        self.button_nhandien = ttk.Button(self.table, text="BẮT ĐẦU NHẬN DIỆN", command=self.nhan_dien_khau_trang)
         self.button_nhandien.grid(row=5, column=5, padx=100)
+        self.button_show_ds_vipham = ttk.Button(self.table,text="SHOW DANH SÁCH VI PHẠM",command=self.show_danh_sach_vi_pham)
+        self.button_show_ds_vipham.grid(row=6, column=5, padx=100)
         self.table.grid(column=0, row=1,padx=50)
+    def show_danh_sach_vi_pham(self):
+        app2 = APPVIPHAM()
+        app2.mainloop()
     def updates(self):
         self.rows = get_sinhhvien()
         for i in self.tree.get_children():
             self.tree.delete(i)
         for row in self.rows:
-            print(row[0])
             self.tree.insert('', tk.END, values=[row[0], row[1], row[2], row[3]])
         self.table.update()
     def delete_all_sv(self):
@@ -288,6 +383,8 @@ class App(tk.Toplevel):
         self.title("THÊM SINH VIÊN")
         self.list_anh_show = []
         self.num_img = 1
+        self.check_anh_chup_dau = True
+        self.get_image_temp = None
     def update(self):
         ret, self.frame,self.frame2 = self.video_frame.get_frame()
         if ret:
@@ -341,7 +438,21 @@ class App(tk.Toplevel):
         self.showed_video = self.update()
         self.video.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
     def chup_anh(self):
+        try:
+            os.mkdir('dataset')
+        except:
+            pass
         id = self.id.get()
+        if self.get_image_temp != None and id != self.get_image_temp:
+            self.check_anh_chup_dau = True
+            for i in self.list_anh_show:
+                i.destroy()
+            self.list_anh_show = []
+        if self.check_anh_chup_dau == True:
+            try:
+                shutil.rmtree("dataset/" + str(id))
+            except:
+                pass
         if check_id(id) == False:
             messagebox.showwarning(
                 "WARNING", "ID BẮT BUỘC LÀ SỐ NGUYÊN!! BẠN ĐÃ NHẬP SAI ID!")
@@ -358,7 +469,7 @@ class App(tk.Toplevel):
         imgpil.save(name_img,"JPEG")
         imgpil.close()
         print('ok')
-
+        self.get_image_temp = id
         self.anh_da_chup_label = ttk.Label(self.video,text="Image FACE {0}/9: ".format(self.num_img))
         self.anh_da_chup_label.grid(row=0,column=3)
         self.button_clearn_img = ttk.Button(self.video,text = "Clear Img",command = self.clear_img)
@@ -371,6 +482,8 @@ class App(tk.Toplevel):
             self.button_chup["state"] = "disabled"
             self.button_them_sv = ttk.Button(self.video,text = "Thêm Sinh Viên",command = self.train)
             self.button_them_sv.grid(row = 6,column=1,pady = 10)
+            self.check_anh_chup_dau = True
+        self.check_anh_chup_dau = False
     def show_list_image(self,name_img,row,col):
         img = Image.open(name_img)
         image1 = img.resize((70, 70), Image.ANTIALIAS)
@@ -386,8 +499,17 @@ class App(tk.Toplevel):
         self.list_anh_show = []
         self.num_img = 1
         self.id.delete(0, 'end')
-        self.button_chup["state"] = "enable"
     def train_thread(self):
+        #xu ly data truoc khi train
+        #get all thu muc con cua thu muc dataset
+        list_data_sv = get_sinhhvien()
+        list_sv = []
+        for sv in list_data_sv:
+            list_sv.append(str(sv[0]))
+        list_data = os.listdir('dataset')
+        for data in list_data:
+            if str(data) not in list_sv:
+                shutil.rmtree('dataset/'+str(data))
         verbose = True
         tic = time.perf_counter()
         print("Training KNN classifier...")
@@ -438,33 +560,77 @@ def detect_mask():
 def nhan_dien_khau_trang():
     luong_detect = Thread(target=detect_mask)
     luong_detect.start()
-# def chuyen_cua_so_detect():
-#     app.destroy()
-#     app2 = APPDETECT()
-#     app2.mainloop()
 
-# #chuyên qua cua so nhan dien
-# class APPDETECT(tk.Tk):
-#     def __init__(self):
-#         super().__init__()
-#         self.frame = None
-#         self.delay = 1
-#         self.geometry("1600x800")
-#         self.create_video_frame()
-#     def create_video_frame(self):
-#         self.video = ttk.Frame(self)
-#         self.video_frame = MyVideoCapture()
-#         # camera
-#         self.canvas = tk.Canvas(self.video, width=self.video_frame.width, height=self.video_frame.height)
-#         self.canvas.grid(row=0, column=2, rowspan=4, padx=60)
-#         self.update_detect()
-#         self.video.grid(column=0, row=0, sticky=tk.NSEW, padx=10, pady=10)
-#     def update_detect(self):
-#         list_name,list_result,ret, self.frame = self.video_frame.get_frame_detect()
-#         if ret:
-#             self.photo = ImageTk.PhotoImage(image=Image.fromarray(self.frame))
-#             self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
-#         self.video.after(1,self.update_detect)
+
+class APPVIPHAM(tk.Toplevel):
+    def __init__(self):
+        super().__init__()
+        self.frame = None
+        self.create_table_vi_pham()
+        self.geometry("1300x600")
+    def create_table_vi_pham(self):
+        self.table = ttk.Frame(self)
+        self.label_phanmem = ttk.Label(self.table, text="DANH SÁCH VI PHẠM ĐEO KHẨU TRANG", font=('Helvetica', 25))
+        self.label_phanmem.grid(row=0, column=0, pady=50)
+        self.danhsach_label = ttk.Label(self.table, text="#DANH SÁCH SINH VIÊN VI PHẠM", font=('Helvetica', 18))
+        self.danhsach_label.grid(row=1, column=0, pady=10)
+        self.tree = ttk.Treeview(self.table, column=("#1", "#2", "#3", "#4","#5","#6"), show='headings')
+        # self.tree.column("#1", anchor=tk.CENTER)
+
+        self.tree.heading("#1", text="ID")
+
+        # self.tree.column("#2", anchor=tk.CENTER)
+
+        self.tree.heading("#2", text="TÊN")
+
+        # self.tree.column("#3", anchor=tk.CENTER)
+
+        self.tree.heading("#3", text="LỚP")
+        # self.tree.column("#4", anchor=tk.CENTER)
+
+        self.tree.heading("#4", text="SỐ ĐIỆN THOẠI")
+        self.tree.heading("#5", text="THỜI GIAN VI PHẠM")
+        self.tree.heading("#6", text="PATH ẢNH VI PHẠM")
+        self.rows = get_ds_vi_pham()
+        for row in self.rows:
+            self.tree.insert('', tk.END, values=[row[0], row[1], row[2], row[3],row[4],row[5]])
+
+        # bind the select event
+        def item_selected(event):
+            for selected_item in self.tree.selection():
+                # dictionary
+                item = self.tree.item(selected_item)
+                # list
+                record = item['values']
+                so_lan = get_so_lan_vi_pham(str(record[0]))
+                #
+                text_title = "ID: {0} \n" \
+                             "TÊN: {1}\n" \
+                             "LỚP: {2}\n" \
+                             "SDT: {3}\n" \
+                             "LẦN CUỐI VI PHẠM VÀO THỜI GIAN: {4}\n" \
+                             "SỐ LẦN VI PHẠM: {5}".format(str(record[0]), record[1], record[2], "0" + str(record[3]),str(record[4]),so_lan)
+                messagebox.showinfo(title='Thông Tin Sinh Viên Vi Phạm',
+                                    message=text_title)
+
+        self.tree.bind('<<TreeviewSelect>>', item_selected)
+
+        self.tree.grid(row=2, column=0, sticky='nsew', rowspan=4, columnspan=3)
+        self.scrollbar = ttk.Scrollbar(self.table, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscroll=self.scrollbar.set)
+        self.scrollbar.grid(row=2, column=4, sticky='ns', rowspan=4)
+        self.button_update_ds = ttk.Button(self.table, text="RELOAD DANH SÁCH VI PHẠM", command=self.updates)
+        self.button_update_ds.grid(row=6, column=0, padx=50,pady = 30)
+        self.table.grid(column=0, row=1, padx=50)
+
+    def updates(self):
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+        self.rows = get_ds_vi_pham()
+        for row in self.rows:
+            self.tree.insert('', tk.END, values=[row[0], row[1], row[2], row[3], row[4], row[5]])
+        self.table.update()
+
 if __name__ == '__main__':
     metadata.create_all(engine)
     app = APPMAIN()
