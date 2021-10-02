@@ -128,6 +128,6 @@ class MyVideoCapture:
                                 cv2.FILLED)
 
             if ret:
-                return (list_name,list_result,ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                return (list_name,list_result,ret,frame)
             else:
                 return (ret, None)

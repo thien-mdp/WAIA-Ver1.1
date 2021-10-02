@@ -20,46 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="97d50969-28f0-4194-bf7c-10f53d059a51" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/DetectFacemask.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922224957.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225000.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225003.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225006.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225009.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225012.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225015.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225018.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225022.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225025.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225027.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225031.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225034.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225037.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225040.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225043.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225046.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225050.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210922225053.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925120943.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925120947.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925121000.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925121014.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925161042.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925161047.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925161052.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925161057.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vipham/20210925161101.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/camera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database.db" beforeDir="false" afterPath="$PROJECT_DIR$/database.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trained_knn_model.clf" beforeDir="false" afterPath="$PROJECT_DIR$/trained_knn_model.clf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,7 +97,10 @@
       <workItem from="1632646745674" duration="6180000" />
       <workItem from="1632722287156" duration="593000" />
       <workItem from="1632883866111" duration="594000" />
-      <workItem from="1632916707274" duration="4444000" />
+      <workItem from="1632916707274" duration="6386000" />
+      <workItem from="1633004218769" duration="605000" />
+      <workItem from="1633085307631" duration="687000" />
+      <workItem from="1633143957726" duration="2520000" />
     </task>
     <servers />
   </component>

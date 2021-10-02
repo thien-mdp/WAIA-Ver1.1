@@ -8,7 +8,7 @@ from camera import MyVideoCapture
 import test_train
 from datetime import datetime
 from threading import Thread
-from database import get_so_lan_vi_pham,sv,engine,metadata,check_sinhvien,update_sinhvien,del_sinhvien,add_sinhvien,get_sinhhvien,del_all_sv,get_one_sv,get_ds_vi_pham,check_vi_pham_hop_le
+from database import get_so_lan_vi_pham,del_all_vipham,sv,engine,metadata,check_sinhvien,update_sinhvien,del_sinhvien,add_sinhvien,get_sinhhvien,del_all_sv,get_one_sv,get_ds_vi_pham,check_vi_pham_hop_le
 import shutil
 #Folder Dataset
 FOLDER = "dataset/"
@@ -621,8 +621,15 @@ class APPVIPHAM(tk.Toplevel):
         self.scrollbar.grid(row=2, column=4, sticky='ns', rowspan=4)
         self.button_update_ds = ttk.Button(self.table, text="RELOAD DANH SÁCH VI PHẠM", command=self.updates)
         self.button_update_ds.grid(row=6, column=0, padx=50,pady = 30)
+        self.button_update_ds = ttk.Button(self.table, text="XÓA DANH SÁCH", command=self.delete_all_sv_vipham)
+        self.button_update_ds.grid(row=6, column=1)
         self.table.grid(column=0, row=1, padx=50)
 
+    def delete_all_sv_vipham(self):
+        check = messagebox.askquestion("NGUY HIỂM", "Bạn có muốn xóa toàn bộ danh sách sinh viên vi phạm!")
+        if check == 'yes':
+            del_all_vipham()
+            self.updates()
     def updates(self):
         for i in self.tree.get_children():
             self.tree.delete(i)
